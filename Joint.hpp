@@ -8,18 +8,23 @@ public:
         const byte directionPin,
         const float unitToSteps,
         const byte limitSwitchPin,
-        const byte limitDirection);
+        const char limitDirection,
+        const long limitPosition);
   ~Joint();
 
-  void goLimit(int speed);
+  void goLimit(const int speed);
   bool isOnLimit(void);
+  long calculateMovementSteps(const int units);
 
   friend class ScaraRoboticArm;
+  friend void setup(void);
+  friend void loop(void);
 
 private:
   const byte JOINT_NUMBER;
   AccelStepper stepper;
   const float UNIT_TO_STEPS;
   const byte LIMIT_SWITCH_PIN;
-  const byte LIMIT_DIRECTION;
+  const char LIMIT_DIRECTION;
+  const long LIMIT_POSITION;
 };
