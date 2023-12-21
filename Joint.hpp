@@ -14,7 +14,9 @@ public:
 
   void goLimit(const int speed);
   bool isOnLimit(void);
-  long calculateMovementSteps(const int units);
+  long calculateMovementSteps(const float units);
+  double getArticularPosition(void);
+  void setArticularPosition(double articularPositionUnits);
 
   friend class ScaraRoboticArm;
   friend void setup(void);

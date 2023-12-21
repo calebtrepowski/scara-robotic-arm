@@ -54,6 +54,14 @@ bool Joint::isOnLimit(void) {
   return digitalRead(LIMIT_SWITCH_PIN);
 }
 
-long Joint::calculateMovementSteps(const int units) {
-  return (long)(units)*UNIT_TO_STEPS;
+long Joint::calculateMovementSteps(const float units) {
+  return units * UNIT_TO_STEPS;
+}
+
+double Joint::getArticularPosition(void) {
+  return stepper.currentPosition() / UNIT_TO_STEPS;
+}
+
+void Joint::setArticularPosition(double articularPositionUnits) {
+  stepper.setCurrentPosition(articularPositionUnits * UNIT_TO_STEPS);
 }
