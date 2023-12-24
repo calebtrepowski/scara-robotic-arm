@@ -26,7 +26,7 @@ void loop(void) {
         switch (gCodeFunction) {
           case 0:
             {
-              double x = arm.x, y = arm.y, z = arm.z;
+              double x = arm.x, y = arm.y, z = arm.z, t = arm.joint_4.getArticularPosition();
               Serial.print(x);
               Serial.print("\t");
               Serial.print(y);
@@ -35,12 +35,15 @@ void loop(void) {
               if (GCode.HasWord('X')) { x = GCode.GetWordValue('X'); }
               if (GCode.HasWord('Y')) { y = GCode.GetWordValue('Y'); }
               if (GCode.HasWord('Z')) { z = GCode.GetWordValue('Z'); }
+              if (GCode.HasWord('T')) { z = GCode.GetWordValue('T'); }
               Serial.println("--------------");
               Serial.print(x);
               Serial.print("\t");
               Serial.print(y);
               Serial.print("\t");
               Serial.println(z);
+              Serial.print("\t");
+              Serial.println(t);
               arm.goToCartesianPosition(x, y, z);
               break;
             }

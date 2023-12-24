@@ -39,7 +39,7 @@ private:
 
   GripperServo gripperServo;
 
-  double x, y, z;
+  double x, y, z, phi;
 
 
 
