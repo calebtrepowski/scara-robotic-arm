@@ -121,7 +121,7 @@ void ScaraRoboticArm::goLimitSequential(void) {
   updateForwardKinematics();
 }
 
-void ScaraRoboticArm::goToAbsoluteArticularPosition(const float joint_1_angle,
+bool ScaraRoboticArm::goToAbsoluteArticularPosition(const float joint_1_angle,
                                                     const float joint_2_distance,
                                                     const float joint_3_angle,
                                                     const float joint_4_angle) {
@@ -130,22 +130,22 @@ void ScaraRoboticArm::goToAbsoluteArticularPosition(const float joint_1_angle,
     Serial.print("No se puede: joint 1 angle: ");
     Serial.println("aca");
     Serial.println(joint_1_angle);
-    return;
+    return false;
   }
   if (joint_2_distance > 0 || joint_2_distance < -200) {
     Serial.print("No se puede: joint 2 distance: ");
     Serial.println(joint_2_distance);
-    return;
+    return false;
   }
   if (joint_3_angle < -150 || joint_3_angle > 150) {
     Serial.print("No se puede: joint 3 angle: ");
     Serial.println(joint_3_angle);
-    return;
+    return false;
   }
   if (joint_4_angle < -139 || joint_4_angle > 91) {
     Serial.print("No se puede: joint 4 angle: ");
     Serial.println(joint_4_angle);
-    return;
+    return false;
   }
   targetPositions[0] = joint_1.calculateMovementSteps(joint_1_angle);
   targetPositions[1] = joint_2.calculateMovementSteps(joint_2_distance);
@@ -155,6 +155,7 @@ void ScaraRoboticArm::goToAbsoluteArticularPosition(const float joint_1_angle,
   multiStepper.moveTo(targetPositions);
   multiStepper.runSpeedToPosition();
   updateForwardKinematics();
+  return true;
 }
 
 void ScaraRoboticArm::updateForwardKinematics(void) {
@@ -217,12 +218,12 @@ ArticularCoordinate ScaraRoboticArm::calculateInverseKinematics(const double tar
 }
 
 
-void ScaraRoboticArm::goToCartesianPosition(const double targetX, const double targetY, const double targetZ) {
+bool ScaraRoboticArm::goToCartesianPosition(const double targetX, const double targetY, const double targetZ) {
   double xx = targetX * targetX;
   double yy = targetY * targetY;
   if (sqrt(xx + yy) > L1 + L2) {
-    Serial.println("no se puede, distancia maxima superada");
-    return;
+    // Serial.println("no se puede, distancia maxima superada");
+    return false;
   }
   // double L1L1 = L1 * L1;
   // double L2L2 = L2 * L2;
@@ -245,25 +246,25 @@ void ScaraRoboticArm::goToCartesianPosition(const double targetX, const double t
   ArticularCoordinate ap = calculateInverseKinematics(targetX, targetY, targetZ);
 
   if (ap.h < -80 || ap.h > 345) {
-    Serial.print("no se puede, theta1D: ");
-    Serial.println(ap.h);
-    return;
+    // Serial.print("no se puede, theta1D: ");
+    // Serial.println(ap.h);
+    return false;
   }
   if (ap.k < -45 || ap.k > 345) {
-    Serial.print("no se puede, theta3D: ");
-    Serial.println(ap.k);
-    return;
+    // Serial.print("no se puede, theta3D: ");
+    // Serial.println(ap.k);
+    return false;
   }
 
-  if (ap.l < -139 || ap.l > 91){
-    Serial.print("no se puede, theta4D: ");
-    Serial.println(ap.l);
-    return;
+  if (ap.l < -139 || ap.l > 91) {
+    // Serial.print("no se puede, theta4D: ");
+    // Serial.println(ap.l);
+    return false;
   }
 
-  Serial.print(ap.h);
-  Serial.print("\t");
-  Serial.println(ap.k);
+  // Serial.print(ap.h);
+  // Serial.print("\t");
+  // Serial.println(ap.k);
 
   // if (targetX >= 0 & targetY >= 0) {
   //   theta1D = 90 - theta1D;
@@ -279,7 +280,7 @@ void ScaraRoboticArm::goToCartesianPosition(const double targetX, const double t
   // if (targetX < 0 & targetY == 0) {
   //   theta1D = 270 + theta1D;
   // }
-  goToAbsoluteArticularPosition(ap.h, ap.j, ap.k, ap.l);
+  return goToAbsoluteArticularPosition(ap.h, ap.j, ap.k, ap.l);
 }
 
 void ScaraRoboticArm::interpolateLine(const double targetX, const double targetY, const double targetZ, byte interpolationSegments = 10) {
